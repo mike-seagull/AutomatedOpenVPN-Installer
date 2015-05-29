@@ -4,11 +4,22 @@
 # inspired by https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-7
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
+	echo "This script must be run as root" 1>&2
+	exit 1
+elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    echo "Usage: $(basename "$0")"
+    echo -e "Optional argument: -h|--help\t Shows this information"
+    echo -e "Optional argument: <CLIENTNAME>\t Name for the client. Defaults to \"client\""
+    exit 1
 fi
 
+if [[ "$#" -gt 0 ]]; then
+    CLIENTNAME="client"
+else
+	CLIENTNAME="$1"
+fi
 
+exit 0
 
 PUBLICIP=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 LOCALIP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')

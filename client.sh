@@ -7,7 +7,7 @@
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
     exit 1
-elif [[ "$#" -ne 1 || "$1" == "-h" || "$1" == "--help"]]; then
+elif [[ "$#" -ne 1 || "$1" == "-h" || "$1" == "--help" ]]; then
     echo "Usage: $(basename "$0") <CLIENTNAME>"
     exit 1
 fi
