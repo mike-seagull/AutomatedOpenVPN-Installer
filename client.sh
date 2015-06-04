@@ -28,7 +28,6 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
-exit 0
 clientname=$1
 debug "clientname=\"$clientname\""
 publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
