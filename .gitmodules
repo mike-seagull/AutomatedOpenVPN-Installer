@@ -1,0 +1,3 @@
+[submodule "bash-logging"]
+	path = bash-logging
+	url = https://github.com/mike-seagull/bash-logging.git
