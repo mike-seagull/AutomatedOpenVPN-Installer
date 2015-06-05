@@ -36,32 +36,33 @@ debug "publicip=\"$publicip\""
 #build certificate
 info "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
+source ./vars > /dev/null
 export KEY_CN="$clientname"
 export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" $clientname
+"$EASY_RSA/pkitool" $clientname > /dev/null
 
-# find open port number to assign to the client
-info "Finding an open port number to assign to the $clientname"
-port=1194 # start with the default 1194
-while grep -Fxq "port $port" /etc/openvpn/server.conf; do
-    port=$((port+1))
-done
-info "Going to use port number $port for $clientname"
-# add the port to the openvpn server
-info "Adding the port to the openvpn server"
-echo "port $port" >> /etc/openvpn/server.conf
+# # find open port number to assign to the client
+# info "Finding an open port number to assign to the $clientname"
+# port=1194 # start with the default 1194
+# while grep -Fxq "port $port" /etc/openvpn/server.conf; do
+#     port=$((port+1))
+# done
+# info "Going to use port number $port for $clientname"
+# # add the port to the openvpn server
+# info "Adding the port to the openvpn server"
+# echo "port $port" >> /etc/openvpn/server.conf
 
-# reload the firewall with the new configurations
-info "Reloading the firewall with the new configurations"
-firewall-cmd --reload
+# # reload the firewall with the new configurations
+# info "Reloading the firewall with the new configurations"
+# firewall-cmd --reload
 
-# restart OpenVPN with the new port
-info "Restarting OpenVPN with the new port"
-systemctl restart openvpn@server.service
+# # restart OpenVPN with the new port
+# info "Restarting OpenVPN with the new port"
+# systemctl restart openvpn@server.service
 
 # create ovpn file
 info "Creating the ovpn file"
-mkdir /etc/openvpn/ovpn_configs
+mkdir /etc/openvpn/ovpn_configs > /dev/null
 touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "${clientname}" >> /etc/openvpn/${clientname}.ovpn
 echo "dev tun" >> /etc/openvpn/${clientname}.ovpn
@@ -85,7 +86,7 @@ cp /etc/openvpn/easy-rsa/keys/ca.crt ${clientname}_openvpn/
 cp /etc/openvpn/easy-rsa/keys/$clientname.crt ${clientname}_openvpn/
 cp /etc/openvpn/easy-rsa/keys/$clientname.key ${clientname}_openvpn/
 cp /etc/openvpn/ovpn_configs/$clientname.ovpn ${clientname}_openvpn/
-tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn
+tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null
 rm -rf ${clientname}_openvpn
 
 info "Done. The certificates and config file for $clientname are gzipped in $HOME"
