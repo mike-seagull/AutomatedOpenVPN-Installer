@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bin/bash
 
 # creates the OpenVPN client certificate, ovpn file and tars them all
 # Michael Hollister
@@ -41,15 +41,15 @@ export EASY_RSA="${EASY_RSA:-.}"
 "$EASY_RSA/pkitool" $clientname
 
 # find open port number to assign to the client
-INFO "Finding an open port number to assign to the $clientname"
-PORT=1194 # start with the default 1194
-while grep -Fxq "port $PORT" /etc/openvpn/server.conf; do
-    port=$((PORT+1))
+info "Finding an open port number to assign to the $clientname"
+port=1194 # start with the default 1194
+while grep -Fxq "port $port" /etc/openvpn/server.conf; do
+    port=$((port+1))
 done
-info "Going to use port number $PORT for $clientname"
+info "Going to use port number $port for $clientname"
 # add the port to the openvpn server
 info "Adding the port to the openvpn server"
-echo "port $PORT" >> /etc/openvpn/server.conf
+echo "port $port" >> /etc/openvpn/server.conf
 
 # reload the firewall with the new configurations
 info "Reloading the firewall with the new configurations"
@@ -66,7 +66,7 @@ touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "${clientname}" >> /etc/openvpn/${clientname}.ovpn
 echo "dev tun" >> /etc/openvpn/${clientname}.ovpn
 echo "proto udp" >> /etc/openvpn/${clientname}.ovpn
-echo "$publicip $PORT" >> /etc/openvpn/${clientname}.ovpn
+echo "$publicip $port" >> /etc/openvpn/${clientname}.ovpn
 echo "resolv-retry infinite" >> /etc/openvpn/${clientname}.ovpn
 echo "nobind" >> /etc/openvpn/${clientname}.ovpn
 echo "persist-key" >> /etc/openvpn/${clientname}.ovpn
