@@ -184,3 +184,4 @@ systemctl -f enable openvpn@server.service > /dev/null 2>&1
 systemctl start openvpn@server.service > /dev/null 2>&1
 
 info "Done."
+exit 0

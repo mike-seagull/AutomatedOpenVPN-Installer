@@ -70,3 +70,4 @@ tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null 2>&1
 rm -rf ${clientname}_openvpn
 
 info "The certificates and config file for $clientname are gzipped in $HOME"
+exit 0
