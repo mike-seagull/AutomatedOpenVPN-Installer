@@ -16,9 +16,6 @@ if [[ $EUID -ne 0 ]]; then
     #echo "This script must be run as root" 1>&2
     error "This script must be run as root"
     exit 1
-#elif [[ "$#" -ne 1 || "$1" == "-h" || "$1" == "--help" ]]; then
-#    echo "Usage: $(basename "$0") <clientname>"
-#    exit 1
 elif [[ "$#" -ne 1 ]]; then
     error "Not enough arguments!"
     usage
@@ -41,42 +38,23 @@ export KEY_CN="$clientname"
 export EASY_RSA="${EASY_RSA:-.}"
 "$EASY_RSA/pkitool" $clientname > /dev/null
 
-# # find open port number to assign to the client
-# info "Finding an open port number to assign to the $clientname"
-# port=1194 # start with the default 1194
-# while grep -Fxq "port $port" /etc/openvpn/server.conf; do
-#     port=$((port+1))
-# done
-# info "Going to use port number $port for $clientname"
-# # add the port to the openvpn server
-# info "Adding the port to the openvpn server"
-# echo "port $port" >> /etc/openvpn/server.conf
-
-# # reload the firewall with the new configurations
-# info "Reloading the firewall with the new configurations"
-# firewall-cmd --reload
-
-# # restart OpenVPN with the new port
-# info "Restarting OpenVPN with the new port"
-# systemctl restart openvpn@server.service
-
 # create ovpn file
 info "Creating the ovpn file"
 mkdir /etc/openvpn/ovpn_configs > /dev/null
 touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "${clientname}" >> /etc/openvpn/${clientname}.ovpn
-echo "dev tun" >> /etc/openvpn/${clientname}.ovpn
-echo "proto udp" >> /etc/openvpn/${clientname}.ovpn
-echo "$publicip $port" >> /etc/openvpn/${clientname}.ovpn
-echo "resolv-retry infinite" >> /etc/openvpn/${clientname}.ovpn
-echo "nobind" >> /etc/openvpn/${clientname}.ovpn
-echo "persist-key" >> /etc/openvpn/${clientname}.ovpn
-echo "persist-tun" >> /etc/openvpn/${clientname}.ovpn
-echo "comp-lzo" >> /etc/openvpn/${clientname}.ovpn
-echo "verb 3" >> /etc/openvpn/${clientname}.ovpn
-echo "ca /path/to/ca.crt" >> /etc/openvpn/${clientname}.ovpn
-echo "cert /path/to/CLIENTNAME.crt" >> /etc/openvpn/${clientname}.ovpn
-echo "key /path/to/CLIENTNAME.key" >> /etc/openvpn/${clientname}.ovpn
+echo "client" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "dev tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "proto udp" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "$publicip $port" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "resolv-retry infinite" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "nobind" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "persist-key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "persist-tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "comp-lzo" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "verb 3" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "ca /path/to/ca.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "cert /path/to/CLIENTNAME.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "key /path/to/CLIENTNAME.key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 
 # tar.gz certificates and config file in home directory
 info "GZipping certificates and config file"
