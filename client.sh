@@ -5,7 +5,7 @@
 # May 28, 2015
 
 # logger
-source "./bash-logging/streamhandler.sh"
+source "./bash-logging/streamhandler.sh" > /dev/null 2>&1
 info "Started $(basename "$0")"
 
 usage (){
@@ -33,16 +33,16 @@ debug "publicip=\"$publicip\""
 #build certificate
 info "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
-source ./vars > /dev/null
+source ./vars > /dev/null 2>&1
 # automated version of ./build-key
 # thanks to https://github.com/Nyr/openvpn-install/blob/master/openvpn-install.sh
 export KEY_CN="$clientname"
 export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" $clientname > /dev/null
+"$EASY_RSA/pkitool" $clientname > /dev/null 2>&1
 
 # create ovpn file
 info "Creating the ovpn file"
-mkdir /etc/openvpn/ovpn_configs > /dev/null
+mkdir /etc/openvpn/ovpn_configs > /dev/null 2>&1
 touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "client" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "dev tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
@@ -66,7 +66,7 @@ cp /etc/openvpn/easy-rsa/keys/ca.crt ${clientname}_openvpn/
 cp /etc/openvpn/easy-rsa/keys/$clientname.crt ${clientname}_openvpn/
 cp /etc/openvpn/easy-rsa/keys/$clientname.key ${clientname}_openvpn/
 cp /etc/openvpn/ovpn_configs/$clientname.ovpn ${clientname}_openvpn/
-tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null
+tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null 2>&1
 rm -rf ${clientname}_openvpn
 
 info "The certificates and config file for $clientname are gzipped in $HOME"

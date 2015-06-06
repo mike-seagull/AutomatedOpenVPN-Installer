@@ -84,7 +84,7 @@ echo "group nobody" >> /etc/openvpn/server.conf
 # Step 3 — Generating Keys and Certificates
 
 # Let's create a directory for the keys to go in.
-mkdir -p /etc/openvpn/easy-rsa/keys > /dev/null
+mkdir -p /etc/openvpn/easy-rsa/keys > /dev/null 2>&1
 
 # We also need to copy the key and certificate generation scripts into the directory.
 cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa
@@ -128,26 +128,26 @@ cp /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 # To start generating our keys and certificates we need to move into our easy-rsa directory 
 # and source in our new variables.
 cd /etc/openvpn/easy-rsa
-source ./vars > /dev/null
+source ./vars > /dev/null 2>&1
 
 # Then we will clean up any keys and certificates which may already be in this folder 
 # and generate our certificate authority.
-./clean-all > /dev/null
+./clean-all > /dev/null 2>&1
 
 # When you build the certificate authority, you will be asked to enter all the information 
 # we put into the vars file, but you will see that your options are already set as the defaults. 
 # So, you can just press ENTER for each one.
 # --batch takes in the defaults
-./build-ca --batch > /dev/null
+./build-ca --batch > /dev/null 2>&1
 
 # The next things we need to generate will are the key and certificate for the server. 
 # Again you can just go through the questions and press ENTER for each one to use your defaults. 
 # At the end, answer Y (yes) to commit the changes.
-./build-key-server --batch server > /dev/null
+./build-key-server --batch server > /dev/null 2>&1
 
 # We also need to generate a Diffie-Hellman key exchange file. This command will take a minute 
 # or two to complete:
-./build-dh > /dev/null
+./build-dh > /dev/null 2>&1
 
 # That's it for our server keys and certificates. Copy them all into our OpenVPN directory.
 cd /etc/openvpn/easy-rsa/keys
@@ -163,13 +163,13 @@ sh ${working_dir}/client.sh $clientname
 info "Configuring the firewall"
 
 # add the openvpn service:
-firewall-cmd --add-service openvpn
-firewall-cmd --permanent --add-service openvpn
+firewall-cmd --add-service openvpn > /dev/null 2>&1
+firewall-cmd --permanent --add-service openvpn > /dev/null 2>&1
 # add the masquerade:
-firewall-cmd --add-masquerade
-firewall-cmd --permanent --add-masquerade
+firewall-cmd --add-masquerade > /dev/null 2>&1
+firewall-cmd --permanent --add-masquerade > /dev/null 2>&1
 # reload the firewall with the new configurations
-firewall-cmd --reload
+firewall-cmd --reload > /dev/null 2>&1
 
 # Then we must enable IP forwarding in sysctl if its hasnt been already 
 if ! grep -Fxq "net.ipv4.ip_forward = 1" /etc/sysctl.conf; then
@@ -179,8 +179,8 @@ fi
 # Step 5 — Starting OpenVPN
 info "Starting the openvpn server"
 # Now we're ready to run our OpenVPN service. So lets add it to systemctl:
-systemctl -f enable openvpn@server.service > /dev/null
+systemctl -f enable openvpn@server.service > /dev/null 2>&1
 # Start OpenVPN:
-systemctl start openvpn@server.service > /dev/null
+systemctl start openvpn@server.service > /dev/null 2>&1
 
 info "Done."
