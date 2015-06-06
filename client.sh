@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/sh
 
 # creates the OpenVPN client certificate, ovpn file and tars them all
 # Michael Hollister
@@ -34,6 +34,8 @@ debug "publicip=\"$publicip\""
 info "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
 source ./vars > /dev/null
+# automated version of ./build-key
+# thanks to https://github.com/Nyr/openvpn-install/blob/master/openvpn-install.sh
 export KEY_CN="$clientname"
 export EASY_RSA="${EASY_RSA:-.}"
 "$EASY_RSA/pkitool" $clientname > /dev/null
@@ -67,4 +69,4 @@ cp /etc/openvpn/ovpn_configs/$clientname.ovpn ${clientname}_openvpn/
 tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null
 rm -rf ${clientname}_openvpn
 
-info "Done. The certificates and config file for $clientname are gzipped in $HOME"
+info "The certificates and config file for $clientname are gzipped in $HOME"
