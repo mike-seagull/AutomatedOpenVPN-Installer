@@ -59,27 +59,29 @@ yum install openvpn easy-rsa -y -q
 # create a configuration file
 info "Creating the server config file"
 cp /usr/share/doc/openvpn-*/sample/sample-config-files/server.conf /etc/openvpn.bak
-touch /etc/openvpn/server.conf
-echo "port 1194" > /etc/openvpn/server.conf
-echo "proto udp" >> /etc/openvpn/server.conf
-echo "dev tun" >> /etc/openvpn/server.conf
-echo "ca ca.crt" >> /etc/openvpn/server.conf
-echo "cert server.crt" >> /etc/openvpn/server.conf
-echo "key server.key" >> /etc/openvpn/server.conf
-echo "dh dh2048.pem" >> /etc/openvpn/server.conf
-echo "server $(removeOctet $(removeOctet $localip)).3.0 255.255.255.0" >> /etc/openvpn/server.conf
-echo "ifconfig-pool-persist ipp.txt" >> /etc/openvpn/server.conf
-echo "keepalive 10 120" >> /etc/openvpn/server.conf
-echo "comp-lzo" >> /etc/openvpn/server.conf
-echo "persist-key" >> /etc/openvpn/server.conf
-echo "persist-tun" >> /etc/openvpn/server.conf
-echo "status openvpn-status.log" >> /etc/openvpn/server.conf
-echo "verb 3" >> /etc/openvpn/server.conf
-echo "push \"redirect-gateway def1 bypass-dhcp\"" >> /etc/openvpn/server.conf
-echo "push \"dhcp-option DNS 8.8.8.8\"" >> /etc/openvpn/server.conf
-echo "push \"dhcp-option DNS 8.8.4.4\"" >> /etc/openvpn/server.conf
-echo "user nobody" >> /etc/openvpn/server.conf
-echo "group nobody" >> /etc/openvpn/server.conf
+cp ./configuration/server.conf /etc/openvpn/server.conf
+
+# touch /etc/openvpn/server.conf
+# echo "port 1194" > /etc/openvpn/server.conf
+# echo "proto udp" >> /etc/openvpn/server.conf
+# echo "dev tun" >> /etc/openvpn/server.conf
+# echo "ca ca.crt" >> /etc/openvpn/server.conf
+# echo "cert server.crt" >> /etc/openvpn/server.conf
+# echo "key server.key" >> /etc/openvpn/server.conf
+# echo "dh dh2048.pem" >> /etc/openvpn/server.conf
+# echo "server $(removeOctet $(removeOctet $localip)).3.0 255.255.255.0" >> /etc/openvpn/server.conf
+# echo "ifconfig-pool-persist ipp.txt" >> /etc/openvpn/server.conf
+# echo "keepalive 10 120" >> /etc/openvpn/server.conf
+# echo "comp-lzo" >> /etc/openvpn/server.conf
+# echo "persist-key" >> /etc/openvpn/server.conf
+# echo "persist-tun" >> /etc/openvpn/server.conf
+# echo "status openvpn-status.log" >> /etc/openvpn/server.conf
+# echo "verb 3" >> /etc/openvpn/server.conf
+# echo "push \"redirect-gateway def1 bypass-dhcp\"" >> /etc/openvpn/server.conf
+# echo "push \"dhcp-option DNS 8.8.8.8\"" >> /etc/openvpn/server.conf
+# echo "push \"dhcp-option DNS 8.8.4.4\"" >> /etc/openvpn/server.conf
+# echo "user nobody" >> /etc/openvpn/server.conf
+# echo "group nobody" >> /etc/openvpn/server.conf
 
 # Step 3 — Generating Keys and Certificates
 
@@ -99,25 +101,27 @@ cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa
 # KEY_CN: Enter the domain or subdomain that resolves to your server
 info "Editing the default values for /etc/openvpn/easy-rsa/vars"
 cp /etc/openvpn/easy-rsa/vars /etc/openvpn/easy-rsa/vars.bak # make a backup
-echo 'export EASY_RSA="`pwd`"' > /etc/openvpn/easy-rsa/vars
-echo 'export OPENSSL="openssl"' >> /etc/openvpn/easy-rsa/vars
-echo 'export PKCS11TOOL="pkcs11-tool"' >> /etc/openvpn/easy-rsa/vars
-echo 'export GREP="grep"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_DIR="$EASY_RSA/keys"' >> /etc/openvpn/easy-rsa/vars
-echo 'echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR' >> /etc/openvpn/easy-rsa/vars
-echo 'export PKCS11_MODULE_PATH="dummy"' >> /etc/openvpn/easy-rsa/vars
-echo 'export PKCS11_PIN="dummy"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_SIZE=2048' >> /etc/openvpn/easy-rsa/vars
-echo 'export CA_EXPIRE=3650' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_EXPIRE=3650' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_COUNTRY="US"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_PROVINCE="CA"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_CITY="SanFrancisco"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_ORG="Fort-Funston"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_EMAIL="me@myhost.mydomain"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_OU="MyOrganizationalUnit"' >> /etc/openvpn/easy-rsa/vars
-echo 'export KEY_NAME="server"' >> /etc/openvpn/easy-rsa/vars
+cp ./configuration/vars /etc/openvpn/easy-rsa/vars
+
+# echo 'export EASY_RSA="`pwd`"' > /etc/openvpn/easy-rsa/vars
+# echo 'export OPENSSL="openssl"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export PKCS11TOOL="pkcs11-tool"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export GREP="grep"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_DIR="$EASY_RSA/keys"' >> /etc/openvpn/easy-rsa/vars
+# echo 'echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR' >> /etc/openvpn/easy-rsa/vars
+# echo 'export PKCS11_MODULE_PATH="dummy"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export PKCS11_PIN="dummy"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_SIZE=2048' >> /etc/openvpn/easy-rsa/vars
+# echo 'export CA_EXPIRE=3650' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_EXPIRE=3650' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_COUNTRY="US"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_PROVINCE="CA"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_CITY="SanFrancisco"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_ORG="Fort-Funston"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_EMAIL="me@myhost.mydomain"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_OU="MyOrganizationalUnit"' >> /etc/openvpn/easy-rsa/vars
+# echo 'export KEY_NAME="server"' >> /etc/openvpn/easy-rsa/vars
 echo "export KEY_CN=\"$(dnsdomainname)\"" >> /etc/openvpn/easy-rsa/vars
 
 # We're also going to remove the chance of our OpenSSL configuration not loading due to 
