@@ -29,6 +29,8 @@ clientname=$1
 debug "clientname=\"$clientname\""
 publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 debug "publicip=\"$publicip\""
+working_dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+debug "working_dir=\"$working_dir\""
 
 #build certificate
 info "Building certificate for $clientname"
@@ -43,7 +45,7 @@ export EASY_RSA="${EASY_RSA:-.}"
 # create ovpn file
 info "Creating the ovpn file"
 mkdir /etc/openvpn/ovpn_configs > /dev/null 2>&1
-cp ./configuration/client.ovpn /etc/openvpn/ovpn_configs/${clientname}.ovpn
+cp ${working_dir}/configuration/client.ovpn /etc/openvpn/ovpn_configs/${clientname}.ovpn
 ovpn="/etc/openvpn/ovpn_configs/${clientname}.ovpn"
 # echo "client" >> $ovpn
 # echo "dev tun" >> $ovpn
