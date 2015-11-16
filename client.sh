@@ -66,7 +66,6 @@ echo "</cert>" >> $ovpn
 echo "<key>" >> $ovpn
 cat /etc/openvpn/easy-rsa/keys/$clientname.key >> $ovpn
 echo "</key>" >> $ovpn
-echo "key /path/to/${clientname}.key" >> $ovpn
 
 : '
 # tar.gz certificates and config file in home directory
