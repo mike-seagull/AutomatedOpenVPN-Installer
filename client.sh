@@ -55,8 +55,8 @@ echo "persist-tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "comp-lzo" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "verb 3" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "ca /path/to/ca.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "cert /path/to/CLIENTNAME.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "key /path/to/CLIENTNAME.key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "cert /path/to/${clientname}.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "key /path/to/${clientname}.key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 
 # tar.gz certificates and config file in home directory
 info "GZipping certificates and config file"
