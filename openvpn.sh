@@ -18,9 +18,9 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 if [[ "$#" -gt 0 ]]; then
-    clientname="client"
+    clientname="$1"
 else
-	clientname="$1"
+    clientname="client"
 fi
 
 
@@ -157,7 +157,8 @@ cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
 # certificates will be shared with your clients, and it's best to generate separate keys and 
 # certificates for each client you intend on connecting.
 # Make sure that if you do this you give them descriptive names
-sh ${working_dir}/client.sh $clientname
+cd ${working_dir}
+sh client.sh $clientname
 
 # Step 4 — Routing
 info "Configuring the firewall"
