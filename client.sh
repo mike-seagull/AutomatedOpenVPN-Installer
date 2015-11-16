@@ -47,7 +47,7 @@ touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "client" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "dev tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "proto udp" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "$publicip $port" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+echo "remote $publicip $port" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "resolv-retry infinite" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "nobind" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
 echo "persist-key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
