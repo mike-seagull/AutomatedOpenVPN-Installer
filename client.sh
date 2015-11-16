@@ -33,7 +33,7 @@ debug "publicip=\"$publicip\""
 #build certificate
 info "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
-source ./configuration/vars > /dev/null 2>&1
+source ./vars > /dev/null 2>&1
 # automated version of ./build-key
 # thanks to https://github.com/Nyr/openvpn-install/blob/master/openvpn-install.sh
 export KEY_CN="$clientname"
