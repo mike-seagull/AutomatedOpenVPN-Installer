@@ -122,8 +122,12 @@ cp ./configuration/vars /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_EMAIL="me@myhost.mydomain"' >> /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_OU="MyOrganizationalUnit"' >> /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_NAME="server"' >> /etc/openvpn/easy-rsa/vars
-echo "export KEY_CN=\"$(dnsdomainname)\"" >> /etc/openvpn/easy-rsa/vars
-
+if [ -z "$(dnsdomainname)" ]; then
+    echo "export KEY_CN=\"$(dnsdomainname)\"" >> /etc/openvpn/easy-rsa/vars
+else
+    echo "export KEY_CN=\"$(hostname).com\"" >> /etc/openvpn/easy-rsa/vars
+fi
+    
 # We're also going to remove the chance of our OpenSSL configuration not loading due to 
 # the version being undetectable. We're going to do this by copying the required configuration 
 # file and removing the version number.
