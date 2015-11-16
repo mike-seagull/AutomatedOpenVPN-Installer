@@ -44,20 +44,31 @@ export EASY_RSA="${EASY_RSA:-.}"
 info "Creating the ovpn file"
 mkdir /etc/openvpn/ovpn_configs > /dev/null 2>&1
 touch /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "client" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "dev tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "proto udp" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "remote $publicip $port" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "resolv-retry infinite" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "nobind" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "persist-key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "persist-tun" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "comp-lzo" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "verb 3" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "ca /path/to/ca.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "cert /path/to/${clientname}.crt" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
-echo "key /path/to/${clientname}.key" >> /etc/openvpn/ovpn_configs/${clientname}.ovpn
+ovpn="/etc/openvpn/ovpn_configs/${clientname}.ovpn"
+echo "client" >> $ovpn
+echo "dev tun" >> $ovpn
+echo "proto udp" >> $ovpn
+echo "remote $publicip $port" >> $ovpn
+echo "resolv-retry infinite" >> $ovpn
+echo "nobind" >> $ovpn
+echo "persist-key" >> $ovpn
+echo "persist-tun" >> $ovpn
+echo "comp-lzo" >> $ovpn
+echo "verb 3" >> $ovpn
+echo "<ca>" >> $ovpn
+cat /etc/openvpn/easy-rsa/keys/ca.crt >> $ovpn
+echo "</ca>" >> $ovpn
+#echo "ca /path/to/ca.crt" >> $ovpn
+echo "<cert>" >> $ovpn
+cat /etc/openvpn/easy-rsa/keys/$clientname.crt >> $ovpn
+echo "</cert>" >> $ovpn
+#echo "cert /path/to/${clientname}.crt" >> $ovpn
+echo "<key>" >> $ovpn
+cat /etc/openvpn/easy-rsa/keys/$clientname.key >> $ovpn
+echo "</key>" >> $ovpn
+echo "key /path/to/${clientname}.key" >> $ovpn
 
+: '
 # tar.gz certificates and config file in home directory
 info "GZipping certificates and config file"
 cd $HOME
@@ -70,4 +81,7 @@ tar -zcvf ${clientname}_openvpn.tar.gz ${clientname}_openvpn > /dev/null 2>&1
 rm -rf ${clientname}_openvpn
 
 info "The certificates and config file for $clientname are gzipped in $HOME"
+'
+cp /etc/openvpn/ovpn_configs/$clientname.ovpn $HOME/
+info "The config file for $clientname is in $HOME"
 exit 0
