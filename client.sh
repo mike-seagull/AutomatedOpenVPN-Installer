@@ -27,7 +27,12 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
-clientname=$1
+if [[ "$#" -gt 0 ]]; then
+    clientname="$1"
+else
+    clientname="client"
+fi
+
 publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 working_dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
