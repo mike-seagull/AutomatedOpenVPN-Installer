@@ -4,16 +4,21 @@
 # inspired by https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-7
 
 # logger
-source "./bash-logging/streamhandler.sh"
-info "Started $(basename "$0")"
+#source "./bash-logging/streamhandler.sh"
+#info "Started $(basename "$0")"
+echo "Started $(basename "$0")"
 
 if [[ $EUID -ne 0 ]]; then
-	error "This script must be run as root" 1>&2
+	#error "This script must be run as root" 1>&2
+	echo "This script must be run as root"
 	exit 1
 elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    info "Usage: $(basename "$0")"
-    info -e "Optional argument: -h|--help\t Shows this information"
-    info -e "Optional argument: <clientname>\t Name for the client. Defaults to \"client\""
+    #info "Usage: $(basename "$0")"
+    echo "Usage: $(basename "$0")"
+    #info -e "Optional argument: -h|--help\t Shows this information"
+    echo "Optional argument: -h|--help\t Shows this information"
+    #info -e "Optional argument: <clientname>\t Name for the client. Defaults to \"client\""
+    echo "Optional argument: <clientname>\t Name for the client. Defaults to \"client\""
     exit 1
 fi
 
@@ -28,9 +33,9 @@ publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e '
 localip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
 working_dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
-debug "publicip = $publicip"
-debug "localip = $localip"
-debug "working_dir=$working_dir"
+#debug "publicip = $publicip"
+#debug "localip = $localip"
+#debug "working_dir=$working_dir"
 
 removeOctet () {
 	# This function removes an octect from an ip address and returns the result
@@ -44,20 +49,23 @@ removeOctet () {
 # Before we start we'll need to install the Extra Packages for Enterprise Linux (EPEL) repository. 
 # This is because OpenVPN isn't available in the default CentOS repositories. The EPEL repository 
 # is an additional repository managed by the Fedora Project containing non-standard but popular packages.
-info "Installing epel-release"
+#info "Installing epel-release"
+echo "Installing epel-release"
 yum install epel-release -y -q
 
 # Step 1 — Installing OpenVPN
 
 # First we need to install OpenVPN. We'll also install Easy RSA for generating our SSL key pairs, 
 # which will secure our VPN connections.
-info "Installing openvpn and easy-rsa"
+#info "Installing openvpn and easy-rsa"
+echo "Installing openvpn and easy-rsa"
 yum install openvpn easy-rsa -y -q
 
 # Step 2 — Configuring OpenVPN
 
 # create a configuration file
-info "Creating the server config file"
+#info "Creating the server config file"
+echo "Creating the server config file"
 cp /usr/share/doc/openvpn-*/sample/sample-config-files/server.conf /etc/openvpn.bak
 cp ./configuration/server.conf /etc/openvpn/server.conf
 
@@ -99,7 +107,8 @@ cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa
 # KEY_NAME: You should enter server here; you could enter something else, but then you 
 # would also have to update the configuration files that reference server.key and server.crt
 # KEY_CN: Enter the domain or subdomain that resolves to your server
-info "Editing the default values for /etc/openvpn/easy-rsa/vars"
+#info "Editing the default values for /etc/openvpn/easy-rsa/vars"
+echo "Editing the default values for /etc/openvpn/easy-rsa/vars"
 cp /etc/openvpn/easy-rsa/vars /etc/openvpn/easy-rsa/vars.bak # make a backup
 cp ./configuration/vars /etc/openvpn/easy-rsa/vars
 
@@ -169,7 +178,8 @@ cd ${working_dir}
 sh client.sh $clientname
 
 # Step 4 — Routing
-info "Configuring the firewall"
+#info "Configuring the firewall"
+echo "Configuring the firewall"
 
 # add the openvpn service:
 firewall-cmd --add-service openvpn > /dev/null 2>&1
@@ -186,11 +196,13 @@ if ! grep -Fxq "net.ipv4.ip_forward = 1" /etc/sysctl.conf; then
 	systemctl restart network.service
 fi
 # Step 5 — Starting OpenVPN
-info "Starting the openvpn server"
+#info "Starting the openvpn server"
+echo "Starting the openvpn server"
 # Now we're ready to run our OpenVPN service. So lets add it to systemctl:
 systemctl -f enable openvpn@server.service > /dev/null 2>&1
 # Start OpenVPN:
 systemctl start openvpn@server.service > /dev/null 2>&1
 
-info "Done."
+#info "Done."
+echo "Done."
 exit 0

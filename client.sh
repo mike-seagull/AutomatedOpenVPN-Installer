@@ -5,19 +5,21 @@
 # May 28, 2015
 
 # logger
-source "./bash-logging/streamhandler.sh" > /dev/null 2>&1
-info "Started $(basename "$0")"
+#source "./bash-logging/streamhandler.sh" > /dev/null 2>&1
+#info "Started $(basename "$0")"
+echo "Started $(basename "$0")"
 
 usage (){
     echo "Usage: $(basename "$0") <clientname>"
 }
 
 if [[ $EUID -ne 0 ]]; then
-    #echo "This script must be run as root" 1>&2
-    error "This script must be run as root"
+    #error "This script must be run as root"
+    echo "This script must be run as root"
     exit 1
 elif [[ "$#" -ne 1 ]]; then
-    error "Not enough arguments!"
+    #error "Not enough arguments!"
+    echo "Not enough arguments!"
     usage
     exit 1
 elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -26,14 +28,12 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 clientname=$1
-debug "clientname=\"$clientname\""
 publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
-debug "publicip=\"$publicip\""
 working_dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
-debug "working_dir=\"$working_dir\""
 
-#build certificate
-info "Building certificate for $clientname"
+# build certificate
+#info "Building certificate for $clientname"
+echo "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
 source ./vars > /dev/null 2>&1
 # automated version of ./build-key
@@ -43,7 +43,8 @@ export EASY_RSA="${EASY_RSA:-.}"
 "$EASY_RSA/pkitool" $clientname > /dev/null 2>&1
 
 # create ovpn file
-info "Creating the ovpn file"
+#info "Creating the ovpn file"
+echo "Creating the ovpn file"
 mkdir /etc/openvpn/ovpn_configs > /dev/null 2>&1
 cp ${working_dir}/configuration/client.ovpn /etc/openvpn/ovpn_configs/${clientname}.ovpn
 ovpn="/etc/openvpn/ovpn_configs/${clientname}.ovpn"
@@ -84,5 +85,6 @@ echo "</key>" >> $ovpn
 # info "The certificates and config file for $clientname are gzipped in $HOME"
 
 cp /etc/openvpn/ovpn_configs/$clientname.ovpn $HOME/
-info "The config file for $clientname is in $HOME"
+#info "The config file for $clientname is in $HOME"
+echo "The config file for $clientname is in $HOME"
 exit 0
