@@ -6,14 +6,14 @@ Automated script to install an OpenVPN server. It is originally made for RedHat 
 ----
 ## openvpn.sh
 ### usage
-    sudo openvpn.sh <clientname>
+    sudo sh openvpn.sh <clientname>
 
 Openvpn.sh takes in a client name and defaults to "client". It must be ran as root.
 
 ----
 ## client.sh
 ### usage
-    ./client.sh <clientname>
+    sh client.sh <clientname>
 
 Client.sh can be ran separately and should be to add more clients to the openvpn server. It also takes in a client name and defaults to "client".
 
