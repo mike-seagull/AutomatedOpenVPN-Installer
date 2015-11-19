@@ -180,28 +180,45 @@ sh client.sh $clientname
 # Step 4 — Routing
 #info "Configuring the firewall"
 echo "Configuring the firewall"
-
-# add the openvpn service:
-firewall-cmd --add-service openvpn > /dev/null 2>&1
-firewall-cmd --permanent --add-service openvpn > /dev/null 2>&1
-# add the masquerade:
-firewall-cmd --add-masquerade > /dev/null 2>&1
-firewall-cmd --permanent --add-masquerade > /dev/null 2>&1
-# reload the firewall with the new configurations
-firewall-cmd --reload > /dev/null 2>&1
-
+if [ -n "$(command -v iptables)" ]; then
+    iptables -A INPUT -i eth0 -p udp --dport 1194 -j ACCEPT
+    iptables -A OUTPUT -o eth0 -p udp --dport 1194 -j ACCEPT
+    iptables -A INPUT -i tun0 -j ACCEPT
+    iptables -A OUTPUT -o tun0 -j ACCEPT
+    iptables -A FORWARD -o tun0 -j ACCEPT
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+    service iptables save
+elif [ -n "$(command -v firewalld)" ]; then
+    # add the openvpn service:
+    firewall-cmd --add-service openvpn > /dev/null 2>&1
+    firewall-cmd --permanent --add-service openvpn > /dev/null 2>&1
+    # add the masquerade:
+    firewall-cmd --add-masquerade > /dev/null 2>&1
+    firewall-cmd --permanent --add-masquerade > /dev/null 2>&1
+    # reload the firewall with the new configurations
+    firewall-cmd --reload > /dev/null 2>&1
+else
+    echo "ERROR: cannot configure firewall"
+fi
 # Then we must enable IP forwarding in sysctl if its hasnt been already 
 if ! grep -Fxq "net.ipv4.ip_forward = 1" /etc/sysctl.conf; then
-	echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
-	systemctl restart network.service
+    echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+    sysctl -p > /dev/null 2>&1 # Centos 6
+    systemctl restart network.service > /dev/null 2>&1 # Centos 7
 fi
 # Step 5 — Starting OpenVPN
 #info "Starting the openvpn server"
 echo "Starting the openvpn server"
 # Now we're ready to run our OpenVPN service. So lets add it to systemctl:
-systemctl -f enable openvpn@server.service > /dev/null 2>&1
+
+## Centos 6
+chkconfig openvpn on > /dev/null 2>&1
+chkconfig iptables on > /dev/null 2>&1
+systemctl -f enable openvpn@server.service > /dev/null 2>&1 # Centos 7
+
 # Start OpenVPN:
-systemctl start openvpn@server.service > /dev/null 2>&1
+service openvpn start > /dev/null 2>&1 # Centos 6
+systemctl start openvpn@server.service > /dev/null 2>&1 # Centos 7
 
 #info "Done."
 echo "Done."
