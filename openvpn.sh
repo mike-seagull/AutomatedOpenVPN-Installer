@@ -181,11 +181,10 @@ sh client.sh $clientname
 #info "Configuring the firewall"
 echo "Configuring the firewall"
 if [ -n "$(command -v iptables)" ]; then
-    iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-    iptables -A FORWARD -s 10.8.0.0/24 -j ACCEPT
-    iptables -A FORWARD -j REJECT
-    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
-    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip 
+    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $publicip
+    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $localip
     service iptables save > /dev/null 2>&1
     service iptables restart > /dev/null 2>&1
     chkconfig --add openvpn > /dev/null 2>&1
