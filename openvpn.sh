@@ -30,7 +30,7 @@ fi
 
 if [ -n "$(command -v apt-get)" ]; then
     packagemanager="apt-get"
-else if [ -n "$(command -v yum)" ]; then
+elif [ -n "$(command -v yum)" ]; then
     packagemanager="yum"
 else
     echo "Cannot install needed components"
@@ -59,7 +59,7 @@ removeOctet () {
 # is an additional repository managed by the Fedora Project containing non-standard but popular packages.
 #info "Installing epel-release"
 echo "Installing epel-release"
-$packagemanager install epel-release -y -q
+$packagemanager install epel-release -y -q > /dev/null 2>&1
 
 # Step 1 — Installing OpenVPN
 
@@ -67,7 +67,7 @@ $packagemanager install epel-release -y -q
 # which will secure our VPN connections.
 #info "Installing openvpn and easy-rsa"
 echo "Installing openvpn and easy-rsa"
-$packagemanager install openvpn easy-rsa -y -q
+$packagemanager install openvpn easy-rsa -y -q > /dev/null 2>&1
 
 # Step 2 — Configuring OpenVPN
 
