@@ -181,13 +181,13 @@ sh client.sh $clientname
 #info "Configuring the firewall"
 echo "Configuring the firewall"
 if [ -n "$(command -v iptables)" ]; then
-    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
-    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $publicip
-    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip
-    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip
-    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $localip
-    iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
-    iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE > /dev/null 2>&1
+    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $publicip > /dev/null 2>&1
+    iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip > /dev/null 2>&1
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip > /dev/null 2>&1
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $localip > /dev/null 2>&1
+    iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited > /dev/null 2>&1
+    iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited > /dev/null 2>&1
     service iptables save > /dev/null 2>&1
     chkconfig --add openvpn > /dev/null 2>&1
     chkconfig openvpn on > /dev/null 2>&1
