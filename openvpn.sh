@@ -28,6 +28,14 @@ else
     clientname="client"
 fi
 
+if [ -n "$(command -v apt-get)" ]; then
+    packagemanager="apt-get"
+else if [ -n "$(command -v yum)" ]; then
+    packagemanager="yum"
+else
+    echo "Cannot install needed components"
+    exit 1
+fi
 
 publicip=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 localip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
@@ -51,7 +59,7 @@ removeOctet () {
 # is an additional repository managed by the Fedora Project containing non-standard but popular packages.
 #info "Installing epel-release"
 echo "Installing epel-release"
-yum install epel-release -y -q
+$packagemanager install epel-release -y -q
 
 # Step 1 — Installing OpenVPN
 
@@ -59,14 +67,15 @@ yum install epel-release -y -q
 # which will secure our VPN connections.
 #info "Installing openvpn and easy-rsa"
 echo "Installing openvpn and easy-rsa"
-yum install openvpn easy-rsa -y -q
+$packagemanager install openvpn easy-rsa -y -q
 
 # Step 2 — Configuring OpenVPN
 
 # create a configuration file
 #info "Creating the server config file"
 echo "Creating the server config file"
-cp /usr/share/doc/openvpn-*/sample/sample-config-files/server.conf /etc/openvpn.bak
+#cp /usr/share/doc/openvpn-*/sample/sample-config-files/server.conf /etc/openvpn.bak > /dev/null 2>&1 # CentOS
+cp /usr/share/doc/openvpn*/*/sample-config-files/server.conf* /etc/openvpn/
 cp ./configuration/server.conf /etc/openvpn/server.conf
 
 # touch /etc/openvpn/server.conf
@@ -97,8 +106,8 @@ cp ./configuration/server.conf /etc/openvpn/server.conf
 mkdir -p /etc/openvpn/easy-rsa/keys > /dev/null 2>&1
 
 # We also need to copy the key and certificate generation scripts into the directory.
-cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa
-
+cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa > /dev/null 2>&1
+cp -rf /usr/share/easy-rsa/* /etc/openvpn/easy-rsa > /dev/null 2>&1
 # To make life easier for ourselves we're going to edit the default values the script
 # uses so we don't have to type our information in each time. This information is stored
 # in the vars file so let's open this for editing.
