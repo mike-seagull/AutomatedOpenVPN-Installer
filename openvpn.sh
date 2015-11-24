@@ -184,7 +184,7 @@ cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
 # certificates for each client you intend on connecting.
 # Make sure that if you do this you give them descriptive names
 cd ${working_dir}
-sh client.sh $clientname
+bash client.sh $clientname
 
 # Step 4 — Routing
 #info "Configuring the firewall"
