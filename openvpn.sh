@@ -209,7 +209,16 @@ bash client.sh $clientname
 # Step 4 — Routing
 #info "Configuring the firewall"
 echo "Configuring the firewall"
-if [ -n "$(command -v iptables)" ]; then
+if [ -n "$(command -v firewalld)" ]; then
+    # add the openvpn service:
+    firewall-cmd --add-service openvpn > /dev/null 2>&1
+    firewall-cmd --permanent --add-service openvpn > /dev/null 2>&1
+    # add the masquerade:
+    firewall-cmd --add-masquerade > /dev/null 2>&1
+    firewall-cmd --permanent --add-masquerade > /dev/null 2>&1
+    # reload the firewall with the new configurations
+    firewall-cmd --reload > /dev/null 2>&1
+elif [ -n "$(command -v iptables)" ]; then
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE > /dev/null 2>&1
     iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $publicip > /dev/null 2>&1
     iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip > /dev/null 2>&1
