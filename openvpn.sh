@@ -181,6 +181,7 @@ sh client.sh $clientname
 #info "Configuring the firewall"
 echo "Configuring the firewall"
 if [ -n "$(command -v iptables)" ]; then
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
     iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $publicip
     iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip
@@ -188,7 +189,6 @@ if [ -n "$(command -v iptables)" ]; then
     iptables -D ACCEPT -j REJECT --reject-with icmp-host-prohibited
     iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
     service iptables save > /dev/null 2>&1
-    service iptables restart > /dev/null 2>&1
     chkconfig --add openvpn > /dev/null 2>&1
     chkconfig openvpn on > /dev/null 2>&1
     service openvpn start > /dev/null 2>&1
@@ -205,6 +205,7 @@ else
     echo "ERROR: cannot configure firewall"
 fi
 # Then we must enable IP forwarding in sysctl if its hasnt been already 
+sed -i '/net.ipv4.ip_forward = 0/d' /etc/sysctl.conf # delete line if it exists
 if ! grep -Fxq "net.ipv4.ip_forward = 1" /etc/sysctl.conf; then
     echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
     sysctl -p > /dev/null 2>&1 # Centos 6
