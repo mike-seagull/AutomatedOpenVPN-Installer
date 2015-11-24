@@ -197,7 +197,7 @@ cd /etc/openvpn/easy-rsa
 #cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
 cd /etc/openvpn/easy-rsa/pki > /dev/null 2>&1
 cp ca.crt issued/server.crt private/server.key /etc/openvpn
-co dh.pem /etc/openvpn
+cp dh.pem /etc/openvpn/dh2048.pem
 
 # All of our clients will also need certificates to be able to authenticate. These keys and 
 # certificates will be shared with your clients, and it's best to generate separate keys and 
