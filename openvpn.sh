@@ -190,7 +190,8 @@ cd /etc/openvpn/easy-rsa
 #cd /etc/openvpn/easy-rsa/keys
 #cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
 cd /etc/openvpn/easy-rsa/pki > /dev/null 2>&1
-cp ca.crt dh2048.pem issued/server.crt private/server.key /etc/openvpn
+cp ca.crt issued/server.crt private/server.key /etc/openvpn
+co dh.pem /etc/openvpn
 
 # All of our clients will also need certificates to be able to authenticate. These keys and 
 # certificates will be shared with your clients, and it's best to generate separate keys and 
@@ -246,6 +247,7 @@ systemctl -f enable openvpn@server.service > /dev/null 2>&1 # Centos 7
 # Start OpenVPN:
 service openvpn start > /dev/null 2>&1 # Centos 6
 systemctl start openvpn@server.service > /dev/null 2>&1 # Centos 7
+systemctl start openvpn.service > /dev/null 2>&1 # Debian 8
 
 #info "Done."
 echo "Done."
