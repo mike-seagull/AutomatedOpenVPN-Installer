@@ -77,6 +77,12 @@ echo "Creating the server config file"
 #cp /usr/share/doc/openvpn-*/sample/sample-config-files/server.conf /etc/openvpn.bak > /dev/null 2>&1 # CentOS
 cp /usr/share/doc/openvpn*/*/sample-config-files/server.conf* /etc/openvpn/
 cp ./configuration/server.conf /etc/openvpn/server.conf
+# some servers use nogroup and some use nobody
+if getent group nogroup > /dev/null 2>&1; then
+    echo "group nogroup" >> /etc/openvpn/server.conf
+elif getent group nobody > /dev/null 2>&1; then
+    echo "group nobody" >> /etc/openvpn/server.conf
+fi
 
 # touch /etc/openvpn/server.conf
 # echo "port 1194" > /etc/openvpn/server.conf
@@ -245,9 +251,8 @@ echo "Starting the openvpn server"
 systemctl -f enable openvpn@server.service > /dev/null 2>&1 # Centos 7
 
 # Start OpenVPN:
-service openvpn start > /dev/null 2>&1 # Centos 6
+service openvpn start > /dev/null 2>&1 # Centos 6 & Debian 8
 systemctl start openvpn@server.service > /dev/null 2>&1 # Centos 7
-systemctl start openvpn.service > /dev/null 2>&1 # Debian 8
 
 #info "Done."
 echo "Done."
