@@ -186,8 +186,8 @@ if [ -n "$(command -v iptables)" ]; then
     iptables -t nat -A POSTROUTING -o venet0 -j SNAT --to-source $localip
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $publicip
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $localip
-    iptables -D ACCEPT -j REJECT --reject-with icmp-host-prohibited
     iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
+    iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited
     service iptables save > /dev/null 2>&1
     chkconfig --add openvpn > /dev/null 2>&1
     chkconfig openvpn on > /dev/null 2>&1
