@@ -66,8 +66,8 @@ $packagemanager install epel-release -y -q > /dev/null 2>&1
 # First we need to install OpenVPN. We'll also install Easy RSA for generating our SSL key pairs, 
 # which will secure our VPN connections.
 #info "Installing openvpn and easy-rsa"
-echo "Installing openvpn and easy-rsa"
-$packagemanager install openvpn easy-rsa -y -q > /dev/null 2>&1
+echo "Installing openvpn and wget"
+$packagemanager install openvpn wget -y -q > /dev/null 2>&1
 
 # Step 2 — Configuring OpenVPN
 
@@ -102,12 +102,18 @@ cp ./configuration/server.conf /etc/openvpn/server.conf
 
 # Step 3 — Generating Keys and Certificates
 
+# We also need to copy the key and certificate generation scripts into the directory.
+wget --no-check-certificate -O /etc/openvpn/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/3.0.1/EasyRSA-3.0.1.tgz > /dev/null 2>&1
+tar xzf /etc/openvpn/easy-rsa.tgz -C /etc/openvpn/
+rm /etc/openvpn/easy-rsa.tgz
+mv /etc/openvpn/EasyRSA-3.0.1 /etc/openvpn/easy-rsa
+
+#cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa > /dev/null 2>&1
+#cp -rf /usr/share/easy-rsa/* /etc/openvpn/easy-rsa > /dev/null 2>&1
+
 # Let's create a directory for the keys to go in.
 mkdir -p /etc/openvpn/easy-rsa/keys > /dev/null 2>&1
 
-# We also need to copy the key and certificate generation scripts into the directory.
-cp -rf /usr/share/easy-rsa/2.0/* /etc/openvpn/easy-rsa > /dev/null 2>&1
-cp -rf /usr/share/easy-rsa/* /etc/openvpn/easy-rsa > /dev/null 2>&1
 # To make life easier for ourselves we're going to edit the default values the script
 # uses so we don't have to type our information in each time. This information is stored
 # in the vars file so let's open this for editing.
@@ -117,9 +123,9 @@ cp -rf /usr/share/easy-rsa/* /etc/openvpn/easy-rsa > /dev/null 2>&1
 # would also have to update the configuration files that reference server.key and server.crt
 # KEY_CN: Enter the domain or subdomain that resolves to your server
 #info "Editing the default values for /etc/openvpn/easy-rsa/vars"
-echo "Editing the default values for /etc/openvpn/easy-rsa/vars"
-cp /etc/openvpn/easy-rsa/vars /etc/openvpn/easy-rsa/vars.bak # make a backup
-cp ./configuration/vars /etc/openvpn/easy-rsa/vars
+#echo "Editing the default values for /etc/openvpn/easy-rsa/vars"
+#cp /etc/openvpn/easy-rsa/vars /etc/openvpn/easy-rsa/vars.bak # make a backup
+#cp ./configuration/vars /etc/openvpn/easy-rsa/vars
 
 # echo 'export EASY_RSA="`pwd`"' > /etc/openvpn/easy-rsa/vars
 # echo 'export OPENSSL="openssl"' >> /etc/openvpn/easy-rsa/vars
@@ -140,44 +146,51 @@ cp ./configuration/vars /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_EMAIL="me@myhost.mydomain"' >> /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_OU="MyOrganizationalUnit"' >> /etc/openvpn/easy-rsa/vars
 # echo 'export KEY_NAME="server"' >> /etc/openvpn/easy-rsa/vars
-if [ -z "$(dnsdomainname)" ]; then
-    echo "export KEY_CN=\"$(dnsdomainname)\"" >> /etc/openvpn/easy-rsa/vars
-else
-    echo "export KEY_CN=\"$(hostname).com\"" >> /etc/openvpn/easy-rsa/vars
-fi
+#if [ -z "$(dnsdomainname)" ]; then
+#    echo "export KEY_CN=\"$(dnsdomainname)\"" >> /etc/openvpn/easy-rsa/vars
+#else
+#    echo "export KEY_CN=\"$(hostname).com\"" >> /etc/openvpn/easy-rsa/vars
+#fi
     
 # We're also going to remove the chance of our OpenSSL configuration not loading due to 
 # the version being undetectable. We're going to do this by copying the required configuration 
 # file and removing the version number.
-cp /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+#cp /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+cp /etc/openvpn/easy-rsa/openssl-1.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 
 # To start generating our keys and certificates we need to move into our easy-rsa directory 
 # and source in our new variables.
 cd /etc/openvpn/easy-rsa
-source ./vars > /dev/null 2>&1
+#source ./vars > /dev/null 2>&1
+./easyrsa init-pki > /dev/null 2>&1
 
 # Then we will clean up any keys and certificates which may already be in this folder 
 # and generate our certificate authority.
-./clean-all > /dev/null 2>&1
+#./clean-all > /dev/null 2>&1
 
 # When you build the certificate authority, you will be asked to enter all the information 
 # we put into the vars file, but you will see that your options are already set as the defaults. 
 # So, you can just press ENTER for each one.
 # --batch takes in the defaults
-./build-ca --batch > /dev/null 2>&1
+#./build-ca --batch > /dev/null 2>&1
+./easyrsa --batch build-ca nopass > /dev/null 2>&1
 
 # The next things we need to generate will are the key and certificate for the server. 
 # Again you can just go through the questions and press ENTER for each one to use your defaults. 
 # At the end, answer Y (yes) to commit the changes.
-./build-key-server --batch server > /dev/null 2>&1
+#./build-key-server --batch server > /dev/null 2>&1
+./easyrsa build-server-full server nopass > /dev/null 2>&1
 
 # We also need to generate a Diffie-Hellman key exchange file. This command will take a minute 
 # or two to complete:
-./build-dh > /dev/null 2>&1
-
+#./build-dh > /dev/null 2>&1
+./easyrsa gen-dh > /dev/null 2>&1
+./easyrsa gen-crl > /dev/null 2>&1
 # That's it for our server keys and certificates. Copy them all into our OpenVPN directory.
-cd /etc/openvpn/easy-rsa/keys
-cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
+#cd /etc/openvpn/easy-rsa/keys
+#cp dh2048.pem ca.crt server.crt server.key /etc/openvpn
+cd /etc/openvpn/easy-rsa/pki > /dev/null 2>&1
+cp ca.crt dh2048.pem issued/server.crt private/server.key /etc/openvpn
 
 # All of our clients will also need certificates to be able to authenticate. These keys and 
 # certificates will be shared with your clients, and it's best to generate separate keys and 

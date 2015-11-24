@@ -40,13 +40,13 @@ working_dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 #info "Building certificate for $clientname"
 echo "Building certificate for $clientname"
 cd /etc/openvpn/easy-rsa
-source ./vars > /dev/null 2>&1
+#source ./vars > /dev/null 2>&1
 # automated version of ./build-key
 # thanks to https://github.com/Nyr/openvpn-install/blob/master/openvpn-install.sh
-export KEY_CN="$clientname"
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" $clientname > /dev/null 2>&1
-
+#export KEY_CN="$clientname"
+#export EASY_RSA="${EASY_RSA:-.}"
+#"$EASY_RSA/pkitool" $clientname > /dev/null 2>&1
+./easyrsa build-client-full $clientname nopass > /dev/null 2>&1
 # create ovpn file
 #info "Creating the ovpn file"
 echo "Creating the ovpn file"
@@ -64,15 +64,17 @@ echo "remote $publicip $port" >> $ovpn
 # echo "comp-lzo" >> $ovpn
 # echo "verb 3" >> $ovpn
 echo "<ca>" >> $ovpn
-cat /etc/openvpn/easy-rsa/keys/ca.crt >> $ovpn
+#cat /etc/openvpn/easy-rsa/keys/ca.crt >> $ovpn
+cat /etc/openvpn/easy-rsa/pki/ca.crt >> $ovpn
 echo "</ca>" >> $ovpn
 #echo "ca /path/to/ca.crt" >> $ovpn
 echo "<cert>" >> $ovpn
-cat /etc/openvpn/easy-rsa/keys/$clientname.crt >> $ovpn
+#cat /etc/openvpn/easy-rsa/keys/$clientname.crt >> $ovpn
+cat /etc/openvpn/easy-rsa/pki/issued/$clientname.crt >> $ovpn
 echo "</cert>" >> $ovpn
-#echo "cert /path/to/${clientname}.crt" >> $ovpn
 echo "<key>" >> $ovpn
-cat /etc/openvpn/easy-rsa/keys/$clientname.key >> $ovpn
+#cat /etc/openvpn/easy-rsa/keys/$clientname.key >> $ovpn
+cat /etc/openvpn/easy-rsa/pki/private/$clientname.key >> $ovpn
 echo "</key>" >> $ovpn
 
 
