@@ -2,7 +2,12 @@
 
 ----
 Automated script to install an OpenVPN server. It is originally made for RedHat Distros and has only been tested on CentOS 6.7 and CentOS 7.
-
+----
+## Tested on
+CentOS 6.7
+CentOS 7
+Debian 7.9
+Debian 8.2
 ----
 ## openvpn.sh
 ### usage
